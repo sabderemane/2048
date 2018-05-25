@@ -31,7 +31,7 @@ export default {
 			table.sort(function(a, b) {
 			  return a.score - b.score;
 			})
-			return table.reverse().slice(0,11)
+			return table.reverse().slice(0,10)
 		}
 	},
 	data() {

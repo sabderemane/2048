@@ -15,9 +15,9 @@
 			</tr>
 			<tr v-for='(score, index) in scoresReverse' :key='index' :index='index'>
 				<td>{{index + 1}}</td>
-				<td>{{score.nickname}}</td>
-				<td>{{score.score}} pts</td>
-				<td>{{score.time}} sec</td>
+				<td>{{score.nickname | truncate(15) }}</td>
+				<td>{{score.score | truncate(13) }} pts</td>
+				<td>{{score.time | truncate(4) }} sec</td>
 			</tr>
 		</table>
 
@@ -33,9 +33,9 @@
 			</tr>
 			<tr v-for='(score, index) in AIReverse' :key='index' :index='index'>
 				<td>{{index + 1}}</td>
-				<td>{{score.nickname}}</td>
-				<td>{{score.score}} pts</td>
-				<td>{{score.time}} sec</td>
+				<td>{{score.nickname | truncate(15) }}</td>
+				<td>{{score.score | truncate(13) }} pts</td>
+				<td>{{score.time | truncate(4) }} sec</td>
 			</tr>
 		</table>
 	</div>
@@ -67,7 +67,6 @@ export default {
 		http
 			.get('json')
 			.then(response => {
-				console.log(response.data)
 				this.scores = response.data
 			})
 			.catch(error => console.log(error))
