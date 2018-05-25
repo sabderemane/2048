@@ -54,12 +54,17 @@ export default {
 			this.auto = true
 			this.setTimer()
 			if (!this.grid.over && !this.isSent) {
-				for (var i = 0; i < this.grid.squares.length; i++) {
-				  console.log(this.grid.squares[i].filter(s => s == 4))
-				}
+				// while (!this.grid.over) {
+				// 	let i = 0
+				// 	if (this.grid.hasMoved == false) {
+				// 		i += 1
+				// 		this.changeGrid(keys[i])
+				// 	}
+				// 	setInterval(function(){ this.changeGrid(keys[i]) }, 500);
+				// }
 			}
 			else if (this.grid.over && !this.isSent) {
-	        	this.clearTimer()
+	        	this.clearTimer('[AI] Sarah')
 	        	this.isSent = true
 	        	this.$emit('update')
 	        	this.over = 'Game Over'
@@ -89,14 +94,14 @@ export default {
 				}
 			}
 		},
-		clearTimer() {
+		clearTimer(name) {
 			let minutesLabel = document.getElementById("minutes")
 			let secondsLabel = document.getElementById("seconds")
 			clearInterval(this.timer)
 			let time = Number(minutesLabel.innerHTML) * 60 + Number(secondsLabel.innerHTML)
 			this.game.time = time
 			this.game.score = this.grid.points
-			this.game.nickname = "sarah"
+			this.game.nickname = name
 			console.log(this.game)
 			http
 				.get(`${this.game.nickname}/${this.game.score}/${this.game.time}`)
@@ -113,6 +118,7 @@ export default {
 			this.over = ''
 			this.$forceUpdate() 
 			this.timeOff = false
+			this.isSent = false
 			minutesLabel.innerHTML = '00'
 			secondsLabel.innerHTML = '00'
 			this.setTimer()
@@ -161,7 +167,7 @@ export default {
 			if(self.timeOff == false && self.auto == false) {
 		        self.move(event)
 		        if (self.grid.over && !self.isSent) {
-		        	self.clearTimer()
+		        	self.clearTimer('sarah')
 		        	self.isSent = true
 		        	self.$emit('update')
 		        	self.over = 'Game Over'
