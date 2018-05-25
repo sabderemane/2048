@@ -6,15 +6,15 @@
 		</div>
 		<table>
 			<tr v-for='(line, index) in grid.squares' :key='index' :line='line'>
-				<td v-for='(col, index) in line' :key='index' :col='col' :style="{backgroundColor: caseColor}">{{col}}</td>
+				<td v-for='(col, index) in line' :key='index' :col='col' :style="{backgroundColor: caseColor(col)}">{{col}}</td>
 			</tr>
-			<p v-if='over.length > 0'>
-				<span>{{over}}</span>
-				<span>score : {{game.score}}</span>
-			</p>
 		</table>
+		<div v-if='over.length > 0'>
+			<p class="over">{{over}}</p>
+		</div>
 		<button @click='setTimer' v-if='isTimer'>Start</button>
-		<button @click='clearTimer' v-if='!isTimer'>Finish</button>
+		<button @click='clearTimer' v-else-if='!isTimer && !over.length > 0'>Finish</button>
+		<button @click='reset' v-else-if='!isTimer && over.length > 0'>Reset</button>
 	</div>
 </template>
 
@@ -61,15 +61,39 @@ export default {
 			this.game.score = this.grid.points
 			console.log(this.game)
 		},
+		reset() {
+			let minutesLabel = document.getElementById("minutes").innerHTML
+			let secondsLabel = document.getElementById("seconds").innerHTML
+
+			this.grid.init(4)
+			minutesLabel = 0
+			secondsLabel = 0
+		},
 		changeGrid(key) {
 			return key != '' ? this.grid.move(key) : null
 		},
 		move: function (event) {
     		let arrow = event.key.slice(0,5)
     		let key = event.key.replace(arrow, '').toLowerCase()
-    		console.log(key)
-    		this.changeGrid(key)
+    		//console.log(key)
+    		let reverseKey = this.arrowKey(key)
+    		//console.log(reverseKey)
+    		this.changeGrid(reverseKey)
     		console.log(this.grid)
+		},
+		caseColor(col) {
+			return col === 2 || col === 4 ? '#FFCF3F' 
+                : col === 8 || col === 16 ? '#FF6F00' 
+                : col === 32 || col === 64 ? '#E65100' 
+                : col === 128 || col === 256 ? '#BF360C'
+                : col === 512 || col === 1024 ? '#5D4037'
+                : '#A5A3A3'
+		},
+		arrowKey(key) {
+			return key == 'down' ? 'right'
+				: key == 'right' ? 'down'
+				: key == 'left' ? 'up'
+				: 'left'
 		}
 	},
 	mounted() {
@@ -87,26 +111,9 @@ export default {
 	    });
 	},
 	computed: {
-		reverseGrid() {
-			return this.grid.squares.reverse()
-		},
 		isTimer: {
 			get: function() {
 				return this.timeOff
-			}
-		},
-		caseColor: {
-			get: function() {
-				return this.col == '0' ? "#ffffff"
-				       : this.col == '2' ?  "#fff2e6"
-				       : this.col == 4 ?  "#ffe6cc"
-				       : this.col == 8 ? "#ffd9b3"
-				       : this.col == 12 ? "#ffcc99"
-				       : this.col == 32 ? "#cc6600"
-				       : this.col == 64 ? "#df5020"
-				       : this.col == 128 ? "#ec4913"
-				       : this.col > 128 ? "#ec1313"
-				       : "white"
 			}
 		}
 	},
@@ -129,6 +136,10 @@ export default {
 	}
 	#chrono {
 		padding-right: 10px;
+	}
+	.over {
+		color: red;
+    	font-weight: bold;
 	}
 	div {
 		display: flex;
