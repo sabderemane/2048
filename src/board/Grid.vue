@@ -53,10 +53,18 @@ export default {
 			let keys = ['right','left','up','down']
 			this.auto = true
 			this.setTimer()
-			// while (!this.over.length > 0) {
-			// 	let randKey = keys[Math.floor(Math.random() * keys.length)]
-			// 	this.changeGrid(randKey)
-			// }
+			if (!this.grid.over && !this.isSent) {
+				for (var i = 0; i < this.grid.squares.length; i++) {
+				  console.log(this.grid.squares[i].filter(s => s == 4))
+				}
+			}
+			else if (this.grid.over && !this.isSent) {
+	        	this.clearTimer()
+	        	this.isSent = true
+	        	this.$emit('update')
+	        	this.over = 'Game Over'
+		        this.$forceUpdate()
+		    }
 
 		},
 		setTimer() {
@@ -118,7 +126,7 @@ export default {
     		// get key and change key because grid is not well displayed
     		let reverseKey = this.arrowKey(key)
     		this.changeGrid(reverseKey)
-    		//console.log(this.grid)
+    		console.log(this.grid)
 		},
 		caseColor(col) {
 			return col === 2 || col === 4 ? '#FFCF3F' 
