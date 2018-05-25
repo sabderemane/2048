@@ -1,28 +1,33 @@
 <template>
-	<div>
-		<!-- timer and points -->
-		<div class="flex">
-			<p id="chrono"><span id="minutes">00</span>:<span id="seconds">00</span></p>
-			<p>Score : {{grid.points}}</p>
+	<main class="flex center">
+		<div class="block">
+			<!-- timer and points -->
+			<div class="flex">
+				<p id="chrono"><span id="minutes">00</span>:<span id="seconds">00</span></p>
+				<p>Score : {{grid.points}}</p>
+			</div>
+			<!-- grid -->
+			<table>
+				<tr v-for='(line, index) in grid.squares' :key='index' :line='line'>
+					<td v-for='(col, index) in line' :key='index' :col='col' :style="{backgroundColor: caseColor(col)}">{{col}}</td>
+				</tr>
+			</table>
+			<div v-if='over.length > 0'>
+				<p class="over">{{over}}</p>
+			</div>
+			<div class="flex">
+				<button @click='playManual' v-if='isTimer && !over.length > 0'>Start</button>
+				<button @click='autoPlay' v-if='isTimer && !over.length > 0'>Autoplay</button>
+				<button @click='reset' v-else-if='!isTimer && isSent'>Restart</button>
+			</div>
 		</div>
-		<!-- grid -->
-		<table>
-			<tr v-for='(line, index) in grid.squares' :key='index' :line='line'>
-				<td v-for='(col, index) in line' :key='index' :col='col' :style="{backgroundColor: caseColor(col)}">{{col}}</td>
-			</tr>
-		</table>
-		<div v-if='over.length > 0'>
-			<p class="over">{{over}}</p>
-		</div>
-		<button @click='setTimer' v-if='isTimer && !over.length > 0'>Start</button>
-		<button @click='reset' v-else-if='!isTimer && isSent'>Restart</button>
 		<!-- scores -->
-		<div>
-			<h3>My Bests score</h3>
+		<div class="block">
+			<h3>TOP 10 Best Scores</h3>
 			<score @update='loadScores' :scores='scores'></score>
 			<router-link to='scores'>View others scores</router-link>
 		</div>
-	</div>
+	</main>
 </template>
 
 <script>
@@ -40,12 +45,25 @@ export default {
 		this.getScores()
 	},
 	methods: {
+		playManual() {
+			this.auto = false
+			this.setTimer()
+		},
+		autoPlay() {
+			let keys = ['right','left','up','down']
+			this.auto = true
+			this.setTimer()
+			// while (!this.over.length > 0) {
+			// 	let randKey = keys[Math.floor(Math.random() * keys.length)]
+			// 	this.changeGrid(randKey)
+			// }
+
+		},
 		setTimer() {
 			let minutesLabel = document.getElementById("minutes")
 			let secondsLabel = document.getElementById("seconds")
 			let totalSeconds = 0
 			this.timeOff = false
-			this.$forceUpdate()
 			this.timer = setInterval(setTime, 1000)
 
 			function setTime() {
@@ -132,7 +150,7 @@ export default {
 		// After hook created and compile template (vue.js)
 	    let self = this 
 		window.addEventListener('keyup', function(event) {
-			if(self.timeOff == false) {
+			if(self.timeOff == false && self.auto == false) {
 		        self.move(event)
 		        if (self.grid.over && !self.isSent) {
 		        	self.clearTimer()
@@ -159,6 +177,7 @@ export default {
 			timer: '',
 			game: {},
 			isSent: false,
+			auto: false,
 			scores: []
 		}
 	}
