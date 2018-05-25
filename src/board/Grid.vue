@@ -170,6 +170,9 @@ export default {
 		display: flex;
 		flex-direction: row;
 	}
+	.center {
+		justify-content: center;
+	}
 	#chrono {
 		padding-right: 10px;
 	}
@@ -177,10 +180,11 @@ export default {
 		color: red;
     	font-weight: bold;
 	}
-	div {
+	.block {
 		display: flex;
 	    flex-direction: column;
 	    align-items: center;
+	    margin: 1em;
 	}
 	td {
 		width: 50px;
@@ -189,5 +193,8 @@ export default {
 	    border: 1px solid grey;
 	    color: white;
 	    font-weight: bold;
+	}
+	h3 {
+		margin-top: 0.5em;
 	}
 </style>
