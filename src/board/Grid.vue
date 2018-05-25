@@ -1,9 +1,11 @@
 <template>
 	<div>
+		<!-- timer and points -->
 		<div class="flex">
 			<p id="chrono"><span id="minutes">00</span>:<span id="seconds">00</span></p>
 			<p>Score : {{grid.points}}</p>
 		</div>
+		<!-- grid -->
 		<table>
 			<tr v-for='(line, index) in grid.squares' :key='index' :line='line'>
 				<td v-for='(col, index) in line' :key='index' :col='col' :style="{backgroundColor: caseColor(col)}">{{col}}</td>
@@ -13,11 +15,11 @@
 			<p class="over">{{over}}</p>
 		</div>
 		<button @click='setTimer' v-if='isTimer && !over.length > 0'>Start</button>
-		<button @click='clearTimer' v-else-if='!isTimer && !over.length > 0'>Finish</button>
 		<button @click='reset' v-else-if='!isTimer && over.length > 0'>Restart</button>
+		<!-- scores -->
 		<div>
 			<h3>My Bests score</h3>
-			<score></score>
+			<score @update='loadScores' :scores='scores'></score>
 			<router-link to='scores'>View others scores</router-link>
 		</div>
 	</div>
@@ -26,6 +28,7 @@
 <script>
 import Vue from 'vue'
 import Board from '@/utils/board'
+import http from '@/utils/http'
 import Score from '@/scores/Score'
 
 export default {
@@ -34,6 +37,7 @@ export default {
 	created() {
 		this.grid.init(4)
 		console.log(this.grid)
+		this.getScores()
 	},
 	methods: {
 		setTimer() {
@@ -45,27 +49,35 @@ export default {
 			this.timer = setInterval(setTime, 1000)
 
 			function setTime() {
-			  ++totalSeconds
-			  secondsLabel.innerHTML = pad(totalSeconds % 60)
-			  minutesLabel.innerHTML = pad(parseInt(totalSeconds / 60))
+				++totalSeconds
+				secondsLabel.innerHTML = pad(totalSeconds % 60)
+				minutesLabel.innerHTML = pad(parseInt(totalSeconds / 60))
 			}
 
 			function pad(val) {
-			  var valString = val + ""
-			  if (valString.length < 2) {
-			    return "0" + valString
-			  } else {
-			    return valString
-			  }
+				let valString = val + ""
+				if (valString.length < 2) {
+					return "0" + valString
+				} else {
+					return valString
+				}
 			}
 		},
 		clearTimer() {
 			let minutesLabel = document.getElementById("minutes")
 			let secondsLabel = document.getElementById("seconds")
 			clearInterval(this.timer)
-			this.game.time = minutesLabel.innerHTML+':'+secondsLabel.innerHTML
+			let time = Number(minutesLabel.innerHTML) * 60 + Number(secondsLabel.innerHTML)
+			this.game.time = time
 			this.game.score = this.grid.points
+			this.game.nickname = "sarah"
 			console.log(this.game)
+			http
+				.get(`${this.game.nickname}/${this.game.score}/${this.game.time}`)
+				.then(response => {
+					console.log(response.data)
+				})
+				.catch(error => console.log(error))
 		},
 		reset() {
 			let minutesLabel = document.getElementById("minutes")
@@ -103,6 +115,17 @@ export default {
 				: key == 'right' ? 'down'
 				: key == 'left' ? 'up'
 				: 'left'
+		},
+		getScores() {
+			http
+				.get('json')
+				.then(response => {
+					this.scores = response.data
+				})
+				.catch(error => console.log(error))
+		},
+		loadScores() {
+			this.getScores()
 		}
 	},
 	mounted() {
@@ -111,11 +134,13 @@ export default {
 		window.addEventListener('keyup', function(event) {
 			if(self.timeOff == false) {
 		        self.move(event)
-		        self.$forceUpdate() 
-		        if (self.grid.over) {
+		        if (self.grid.over && !self.isSent) {
 		        	self.clearTimer()
+		        	self.isSent = true
+		        	self.$emit('update')
 		        	self.over = 'Game Over'
 		        }
+		        self.$forceUpdate() 
 	        }
 	    });
 	},
@@ -132,7 +157,9 @@ export default {
 			over: '',
 			timeOff: true,
 			timer: '',
-			game: {}
+			game: {},
+			isSent: false,
+			scores: []
 		}
 	}
 }

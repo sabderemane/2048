@@ -7,8 +7,8 @@
 				<th>Score</th>
 				<th>Time</th>
 			</tr>
-			<tr v-for='(score, index) in myScore' :key='index' :index='index'>
-				<td>{{index}}</td>
+			<tr v-for='(score, index) in myScore()' :key='index' :index='index'>
+				<td>{{index + 1}}</td>
 				<td>{{score.nickname}}</td>
 				<td>{{score.score}}</td>
 				<td>{{score.time}}</td>
@@ -24,28 +24,18 @@ import http from '@/utils/http'
 
 export default {
 	name: 'Score',
-	computed: {
+	props: ['scores'],
+	methods: {
 		myScore() {
-			let table = this.score.filter(s => s.nickname == 'sarah')
+			let table = this.scores.filter(s => s.nickname == 'sarah')
 			table.sort(function(a, b) {
 			  return a.score - b.score;
 			})
 			return table.reverse().slice(0,10)
 		}
 	},
-	created() {
-		http
-			.get('json')
-			.then(response => {
-				console.log(response.data)
-				this.score = response.data
-			})
-			.catch(error => console.log(error))
-	},
 	data() {
-		return {
-			score: []
-		}
+		return {}
 	}
 
 }

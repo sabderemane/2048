@@ -2,17 +2,19 @@
 	<div>
 		<h2>Best 30 scores from AI and Humans</h2>
 		<router-link to='/'>Return to the game</router-link>
-		
+
 		<table>
 			<tr>
 				<th><h4>Humans scores</h4></th>
 			</tr>
 			<tr>
+				<th>Rank</th>
 				<th>Nickname</th>
 				<th>Score</th>
 				<th>Time</th>
 			</tr>
 			<tr v-for='(score, index) in scoresReverse' :key='index' :index='index'>
+				<td>{{index + 1}}</td>
 				<td>{{score.nickname}}</td>
 				<td>{{score.score}}</td>
 				<td>{{score.time}}</td>
@@ -24,11 +26,13 @@
 				<th><h4>AIs scores</h4></th>
 			</tr>
 			<tr>
+				<th>Rank</th>
 				<th>Nickname</th>
 				<th>Score</th>
 				<th>Time</th>
 			</tr>
 			<tr v-for='(score, index) in AIReverse' :key='index' :index='index'>
+				<td>{{index + 1}}</td>
 				<td>{{score.nickname}}</td>
 				<td>{{score.score}}</td>
 				<td>{{score.time}}</td>
