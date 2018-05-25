@@ -12,18 +12,25 @@
 		<div v-if='over.length > 0'>
 			<p class="over">{{over}}</p>
 		</div>
-		<button @click='setTimer' v-if='isTimer'>Start</button>
+		<button @click='setTimer' v-if='isTimer && !over.length > 0'>Start</button>
 		<button @click='clearTimer' v-else-if='!isTimer && !over.length > 0'>Finish</button>
-		<button @click='reset' v-else-if='!isTimer && over.length > 0'>Reset</button>
+		<button @click='reset' v-else-if='!isTimer && over.length > 0'>Restart</button>
+		<div>
+			<h3>My Bests score</h3>
+			<score></score>
+			<router-link to='scores'>View others scores</router-link>
+		</div>
 	</div>
 </template>
 
 <script>
 import Vue from 'vue'
 import Board from '@/utils/board'
+import Score from '@/scores/Score'
 
 export default {
 	name: 'Grid',
+	components: { Score },
 	created() {
 		this.grid.init(4)
 		console.log(this.grid)
@@ -56,18 +63,21 @@ export default {
 			let minutesLabel = document.getElementById("minutes")
 			let secondsLabel = document.getElementById("seconds")
 			clearInterval(this.timer)
-			console.log(minutesLabel.innerHTML+':'+secondsLabel.innerHTML)
 			this.game.time = minutesLabel.innerHTML+':'+secondsLabel.innerHTML
 			this.game.score = this.grid.points
 			console.log(this.game)
 		},
 		reset() {
-			let minutesLabel = document.getElementById("minutes").innerHTML
-			let secondsLabel = document.getElementById("seconds").innerHTML
+			let minutesLabel = document.getElementById("minutes")
+			let secondsLabel = document.getElementById("seconds")
 
 			this.grid.init(4)
-			minutesLabel = 0
-			secondsLabel = 0
+			this.over = ''
+			this.$forceUpdate() 
+			this.timeOff = false
+			minutesLabel.innerHTML = '00'
+			secondsLabel.innerHTML = '00'
+			this.setTimer()
 		},
 		changeGrid(key) {
 			return key != '' ? this.grid.move(key) : null
@@ -75,11 +85,10 @@ export default {
 		move: function (event) {
     		let arrow = event.key.slice(0,5)
     		let key = event.key.replace(arrow, '').toLowerCase()
-    		//console.log(key)
+    		// get key and change key because grid is not well displayed
     		let reverseKey = this.arrowKey(key)
-    		//console.log(reverseKey)
     		this.changeGrid(reverseKey)
-    		console.log(this.grid)
+    		//console.log(this.grid)
 		},
 		caseColor(col) {
 			return col === 2 || col === 4 ? '#FFCF3F' 
@@ -151,5 +160,7 @@ export default {
 	    height: 50px;
 	    padding: 0;
 	    border: 1px solid grey;
+	    color: white;
+	    font-weight: bold;
 	}
 </style>
