@@ -15,7 +15,7 @@
 			<p class="over">{{over}}</p>
 		</div>
 		<button @click='setTimer' v-if='isTimer && !over.length > 0'>Start</button>
-		<button @click='reset' v-else-if='!isTimer && over.length > 0'>Restart</button>
+		<button @click='reset' v-else-if='!isTimer && isSent'>Restart</button>
 		<!-- scores -->
 		<div>
 			<h3>My Bests score</h3>

@@ -10,8 +10,8 @@
 			<tr v-for='(score, index) in myScore()' :key='index' :index='index'>
 				<td>{{index + 1}}</td>
 				<td>{{score.nickname}}</td>
-				<td>{{score.score}}</td>
-				<td>{{score.time}}</td>
+				<td>{{score.score}} pts</td>
+				<td>{{score.time}} sec</td>
 			</tr>
 		</table>
 		
